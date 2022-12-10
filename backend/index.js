@@ -27,19 +27,48 @@ app.get("/books", (req,res)=>{
 })
 
 app.post("/books", (req, res) =>{
-    const q = "INSERT INTO books (`title`, `desc`, `cover`) VALUE (?)";
-    const value = [
+    // const q = "INSERT INTO books (`title`, `desc`, `price`, 'cover`) VALUES (?)";
+    const q = "INSERT INTO books (`title`, `desc`, `cover`, `price`) VALUES (?)";
+    const values = [
         req.body.title,
         req.body.desc,
         req.body.cover,
+        req.body.price,
     ];
 
-    db.query(q, [value], (err, data) =>{
+    db.query(q, [values], (err, data) =>{
         if(err) return res.json(err)
-        return res.json("book has been created sucessfully..")
+        return res.json("Book has been created sucessfully..")
     });
 });
 
+app.delete("/books/:id", (req, res) => {
+    const bookId = req.params.id;
+    const q = "DELETE FROM books WHERE id = ?";
+
+    db.query(q, [bookId], (err, data) => {
+        if (err) return res.json(err);
+        return res.json("Book has been deleted sucessfully..");
+    });
+});
+
+
+app.put("/books/:id", (req, res) => {
+    const bookId = req.params.id;
+    const q = "UPDATE books SET `title` = ?, `desc` = ?, `cover` = ?, `price` = ? WHERE id = ?";
+
+    const values = [
+        req.body.title,
+        req.body.desc,
+        req.body.cover,
+        req.body.price,
+    ];
+
+    db.query(q, [...values,bookId], (err, data) => {
+        if (err) return res.json(err);
+        return res.json("Book has been Updated sucessfully..");
+    });
+});
 
 app.listen(8800, ()=>{
     console.log("Connected to Backend!")
